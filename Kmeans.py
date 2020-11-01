@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 
 
 image = cv2.imread('images/bunny.bmp')
-# cv2.imshow('image', image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
 
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 pixels = image.reshape((-1, 3))
