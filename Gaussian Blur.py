@@ -48,7 +48,7 @@ def convolution(image, kernel):
 
 kernel_size = 7
 sigma = np.sqrt(kernel_size)
-img = cv2.imread('C:/Users/Trista/PycharmProjects/Computer Vision Projects/segmentation_project/images/bunny.bmp')
+img = cv2.imread('bunny.bmp')
 kernel = gaussian_kernel(kernel_size, sigma)
 img_blurred = convolution(img, kernel)
 plt.imshow(img_blurred)
