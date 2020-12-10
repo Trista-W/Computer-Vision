@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import MeanShift, estimate_bandwidth
 
 
-image = cv2.imread('C:/Users/Trista/PycharmProjects/Computer Vision Projects/segmentation_project/images/bunny.bmp')
+image = cv2.imread('images/bunny.bmp')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 pixels = image.reshape((-1, 3))
 pixels = pixels / 255
