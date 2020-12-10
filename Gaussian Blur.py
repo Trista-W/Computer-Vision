@@ -32,6 +32,34 @@ def normalize(x, sigma, mu):
     return g
 
 
+def l_o_g(x, y, sigma):
+    '''
+    Calculate the LoG at a given point and with a give para
+    :param x: position x
+    :param y: position y
+    :param sigma: sigma of gaussian
+    :return: LoG
+    '''
+    norm = x**2 + y**2 - 2*(sigma**2)
+    denorm = 2 * np.pi * sigma**6
+    expo = np.exp(-(x**2 + y**2) / 2*(sigma**2))
+    return norm*expo/denorm
+
+
+def log_kernel(sigma, size):
+    w = int(np.ceil(size * float(sigma)))
+    if w % 2 == 0:
+        w += 1
+    mask = []
+    width = int(w // 2)
+    for i in range(-width, width+1):
+        for j in range(-width, width+1):
+            mask.append(l_o_g(i, j, sigma))
+    mask = np.array(mask)
+    mask = np.reshape(mask, (w, w))
+    return mask
+
+
 def convolution(image, kernel):
     if len(image.shape) == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -46,10 +74,35 @@ def convolution(image, kernel):
     return output
 
 
+def zero_crossing(image):
+    row, col = image.shape
+    pad_image = np.zeros((row+2, col+2))
+    pad_image[1:row+1, 1:col+1] = image
+    output = np.zeros(pad_image.shape)
+    for r in range(1, row+1):
+        for c in range(1, col+1):
+            neg_count = 0
+            pos_count = 0
+            # A zero-crossing is represented by two neighboring pixels that change from positive to negative.
+            # Of the two pixels, the one closest to zero is used to represent the zero-crossing.
+            for i in range(-1, 2, 2):
+                for j in range(-1, 2, 2):
+                    print(pad_image[r+i, c+j])
+                    if pad_image[r+i, c+j] < 0:
+                        neg_count += 1
+                    elif pad_image[r+i, c+j] >= 0:
+                        pos_count += 1
+            if pos_count > 0 and neg_count > 0:
+                output[r, c] = 1
+    return output
+
+
 kernel_size = 7
 sigma = np.sqrt(kernel_size)
-img = cv2.imread('C:/Users/Trista/PycharmProjects/Computer Vision Projects/segmentation_project/images/bunny.bmp')
+img = cv2.imread('C:/Users/Trista/PycharmProjects/Computer Vision Projects/segmentation_project/images/hand.bmp')
 kernel = gaussian_kernel(kernel_size, sigma)
 img_blurred = convolution(img, kernel)
+log = log_kernel(sigma, kernel_size)
+img_log = convolution(img_blurred, log)
+img_log = zero_crossing(img_log)
 plt.imshow(img_blurred)
-
